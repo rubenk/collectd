@@ -1,0 +1,14 @@
+language: c
+
+compiler:
+  - clang
+  - gcc
+
+build:
+  ci:
+    - sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+    - sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y install flex
+    - autoreconf -vif
+    - ./configure --disable-dependency-tracking
+    - ./version-gen.sh
+    - make -O -j$(($(getconf _NPROCESSORS_ONLN) + 1)) distcheck
