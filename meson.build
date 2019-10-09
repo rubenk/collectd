@@ -119,10 +119,6 @@ foreach f : functions
   endif
 endforeach
 
-configure_file(
-  output : 'config.h',
-  configuration : conf)
-
 sbindir = get_option('sbindir')
 
 flex = find_program('flex')
@@ -199,8 +195,14 @@ libcollectdclient = static_library('collectdclient',
   dependencies : libgcrypt)
 
 threads = dependency('threads')
-libcap = dependency('libcap', required : false)
 libdl = cc.find_library('dl')
+
+libcap = dependency('libcap', required : false)
+if cc.has_function('cap_get_proc', dependencies : libcap)
+  conf.set10('HAVE_CAPABILITY', true,
+    description : 'Define to 1 if you have cap_get_proc() (-lcap).'
+  )
+endif
 
 collectd_sources = [
   'src/daemon/collectd.c',
@@ -294,3 +296,9 @@ executable('collectd-tg',
   ],
   install : true
 )
+
+configure_file(
+  output : 'config.h',
+  configuration : conf
+)
+
