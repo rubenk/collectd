@@ -130,6 +130,15 @@ executable('collectd',
 	install_dir : sbindir,
 	export_dynamic : true)
 
+executable('collectdctl',
+	sources : 'src/collectdctl.c',
+	include_directories : [
+		includes,
+		'src/libcollectdclient',
+	],
+	link_with : libcollectdclient,
+	install : true)
+
 executable('collectdmon',
 	sources : 'src/collectdmon.c',
 	include_directories : includes,
