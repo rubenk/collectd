@@ -21,7 +21,7 @@ flexgen = generator(flex,
 
 bisongen = generator(bison,
 	output : ['@BASENAME@.c', '@BASENAME@.h'],
-	arguments : ['-Wnone', '--output=@OUTPUT0@', '--defines=@OUTPUT1@', '@INPUT@'])
+	arguments : ['--output=@OUTPUT0@', '--defines=@OUTPUT1@', '@INPUT@'])
 
 scanner = flexgen.process('src/liboconfig/scanner.l')
 parser = bisongen.process('src/liboconfig/parser.y')
