@@ -61,6 +61,19 @@ liboconfig = static_library('oconfig',
 		'src/liboconfig',
 		includes])
 
+libcollectdclient = static_library('collectdclient',
+	sources : [
+		'src/libcollectdclient/client.c',
+		'src/libcollectdclient/network.c',
+		'src/libcollectdclient/network_buffer.c',
+		'src/libcollectdclient/network_parse.c',
+		'src/libcollectdclient/server.c',
+		'src/libcollectdclient/collectd/stdendian.h',
+	],
+	include_directories : [
+		'src/libcollectdclient',
+		includes])
+
 threads = dependency('threads')
 libcap = dependency('libcap', required : false)
 libdl = cc.find_library('dl')
@@ -122,3 +135,12 @@ executable('collectdmon',
 	include_directories : includes,
 	install : true,
 	install_dir : sbindir)
+
+executable('collectd-nagios',
+	sources : 'src/collectd-nagios.c',
+	include_directories : [
+		includes,
+		'src/libcollectdclient',
+	],
+	link_with : libcollectdclient,
+	install : true)
