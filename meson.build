@@ -5,10 +5,117 @@ project('collectd', 'c',
 		'buildtype=debugoptimized',
 		'c_std=gnu99',
 		'prefix=/opt/collectd',
+		'werror=true',
 	])
 
 add_project_arguments('-DHAVE_CONFIG_H', language : 'c')
 cc = meson.get_compiler('c')
+
+conf = configuration_data()
+
+conf.set_quoted('PACKAGE_VERSION', meson.project_version())
+
+# TODO: make these dynamic
+conf.set('COLLECTD_USERAGENT', false, description : 'User agent for http requests')
+conf.set10('COLLECT_DAEMON', true, description : 'whether or not to enable feature daemon mode')
+conf.set10('COLLECT_DEBUG', false, description : 'whether or not to enable feature debugging')
+conf.set10('COLLECT_GETIFADDRS', false, description : 'whether or not to enable feature getifaddrs under Linux')
+conf.set10('COLLECT_WERROR', false, description : 'whether or not to enable feature building with -Werror')
+conf.set('DATA_MAX_NAME_LEN', 128, description : 'Maximum length of data buffers')
+conf.set10('FP_LAYOUT_NEED_NOTHING', true, description : 'Define if doubles are stored in x86 representation.')
+conf.set10('NAN_STATIC_DEFAULT', true, description : 'Define if NAN is defined by default and can initialize static variables.')
+
+headers = [
+  'arpa/inet.h',
+  'dirent.h',
+  'endian.h',
+  'fcntl.h',
+  'fnmatch.h',
+  'fs_info.h',
+  'fshelp.h',
+  'grp.h',
+  'ifaddrs.h',
+  'inttypes.h',
+  'kstat.h',
+  'kvm.h',
+  'libgen.h',
+  'locale.h',
+  'mntent.h',
+  'mnttab.h',
+  'netdb.h',
+  'paths.h',
+  'poll.h',
+  'pthread_np.h',
+  'pwd.h',
+  'regex.h',
+  'net/if.h',
+  'stdint.h',
+  'sys/endian.h',
+  'sys/fs_types.h',
+  'sys/fstyp.h',
+  'sys/ioctl.h',
+  'sys/isa_defs.h',
+  'sys/mntent.h',
+  'sys/mnttab.h',
+  'sys/param.h',
+  'sys/resource.h',
+  'sys/select.h',
+  'sys/socket.h',
+  'sys/stat.h',
+  'sys/statfs.h',
+  'sys/statvfs.h',
+  'sys/sysctl.h',
+  'sys/time.h',
+  'sys/types.h',
+  'sys/un.h',
+  'sys/vfs.h',
+  'sys/vfstab.h',
+  'sys/vmmeter.h',
+  'syslog.h',
+  'unistd.h',
+  'wordexp.h',
+]
+
+foreach h : headers
+  if cc.check_header(h)
+    conf.set10('HAVE_' + h.underscorify().to_upper(), true, description : 'Define to 1 if you have the <@0@> header file.'.format(h))
+  endif
+endforeach
+
+functions = [
+  'asprintf',
+  'getifaddrs',
+  'getloadavg',
+  'getmntent',
+  'getmntent_r',
+  'getpwnam',
+  'getpwnam_r',
+  'getutent',
+  'getutxent',
+  'host_statistics',
+  'if_indextoname',
+  'processor_info',
+  'setenv',
+  'setgroups',
+  'setlocale',
+  'statfs',
+  'statvfs',
+  'strerror_r',
+  'sysctl',
+  'sysctlbyname',
+  'syslog',
+  'thread_info',
+]
+
+foreach f : functions
+  if cc.has_function(f)
+    conf.set10('HAVE_' + f.underscorify().to_upper(), true, description : 'Define to 1 if you have the `@0@\' function.'.format(f))
+  endif
+endforeach
+
+configure_file(
+	output : 'config.h',
+	configuration : conf)
 
 sbindir = get_option('sbindir')
 
