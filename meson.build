@@ -15,7 +15,8 @@ cc = meson.get_compiler('c')
 
 conf = configuration_data()
 
-conf.set_quoted('PACKAGE_VERSION', meson.project_version())
+collectd_version = meson.project_version()
+conf.set_quoted('PACKAGE_VERSION', collectd_version)
 
 # TODO: make these dynamic
 conf.set('COLLECTD_USERAGENT', false, description : 'User agent for http requests')
@@ -136,6 +137,8 @@ bisongen = generator(bison,
 
 scanner = flexgen.process('src/liboconfig/scanner.l')
 parser = bisongen.process('src/liboconfig/parser.y')
+
+pod2man = find_program('pod2man')
 
 includes = include_directories('src', 'src/daemon')
 
@@ -324,4 +327,12 @@ configure_file(
   output : 'config.h',
   configuration : conf
 )
+
+custom_target('collectd.1',
+  output : 'collectd.1',
+  input : 'src/collectd.pod',
+  install : true,
+  install_dir : join_paths(get_option('prefix'), get_option('mandir'), 'man1'),
+  build_by_default : true,
+  command : [pod2man, '--release', collectd_version, '--center=collectd', '@INPUT@', '@OUTPUT@'])
 
