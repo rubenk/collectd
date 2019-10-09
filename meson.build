@@ -61,6 +61,8 @@ liboconfig = static_library('oconfig',
 		'src/liboconfig',
 		includes])
 
+libgcrypt = dependency('libgcrypt', version : '>=1.1')
+
 libcollectdclient = static_library('collectdclient',
 	sources : [
 		'src/libcollectdclient/client.c',
@@ -72,7 +74,9 @@ libcollectdclient = static_library('collectdclient',
 	],
 	include_directories : [
 		'src/libcollectdclient',
-		includes])
+		includes,
+	],
+	dependencies : libgcrypt)
 
 threads = dependency('threads')
 libcap = dependency('libcap', required : false)
@@ -152,4 +156,16 @@ executable('collectd-nagios',
 		'src/libcollectdclient',
 	],
 	link_with : libcollectdclient,
+	install : true)
+
+executable('collectd-tg',
+	sources : 'src/collectd-tg.c',
+	include_directories : [
+		includes,
+		'src/libcollectdclient',
+	],
+	link_with : [
+		libcollectdclient,
+		libheap,
+	],
 	install : true)
