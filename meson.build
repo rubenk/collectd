@@ -197,7 +197,20 @@ libcollectdclient = shared_library('collectdclient',
   ],
   dependencies : libgcrypt,
   install : true,
-  version: '1.1.0')
+  version: '1.1.0'
+)
+
+collectdclient_headers = [
+  'src/libcollectdclient/collectd/client.h',
+  'src/libcollectdclient/collectd/lcc_features.h',
+  'src/libcollectdclient/collectd/network_buffer.h',
+  'src/libcollectdclient/collectd/network.h',
+  'src/libcollectdclient/collectd/network_parse.h',
+  'src/libcollectdclient/collectd/server.h',
+  'src/libcollectdclient/collectd/types.h',
+]
+
+install_headers(collectdclient_headers, subdir : 'collectd')
 
 threads = dependency('threads')
 libdl = cc.find_library('dl')
