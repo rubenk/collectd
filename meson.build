@@ -16,7 +16,7 @@ flex = find_program('flex')
 bison = find_program('bison')
 
 flexgen = generator(flex,
-	output : '@PLAINNAME@.c',
+	output : '@BASENAME@.c',
 	arguments : ['-o', '@OUTPUT@', '@INPUT@'])
 
 bisongen = generator(bison,
