@@ -10,6 +10,8 @@ project('collectd', 'c',
 add_project_arguments('-DHAVE_CONFIG_H', language : 'c')
 cc = meson.get_compiler('c')
 
+sbindir = get_option('sbindir')
+
 flex = find_program('flex')
 bison = find_program('bison')
 
@@ -112,5 +114,11 @@ executable('collectd',
 		liboconfig
 	],
 	install : true,
-	install_dir : get_option('sbindir'),
+	install_dir : sbindir,
 	export_dynamic : true)
+
+executable('collectdmon',
+	sources : 'src/collectdmon.c',
+	include_directories : includes,
+	install : true,
+	install_dir : sbindir)
