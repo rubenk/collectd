@@ -178,8 +178,11 @@ liboconfig = static_library('oconfig',
 )
 
 libgcrypt = dependency('libgcrypt', version : '>=1.1')
+if cc.has_header('gcrypt.h')
+  conf.set10('HAVE_GCRYPT_H', true)
+endif
 
-libcollectdclient = static_library('collectdclient',
+libcollectdclient = shared_library('collectdclient',
   sources : [
     'src/libcollectdclient/client.c',
     'src/libcollectdclient/network.c',
@@ -192,7 +195,9 @@ libcollectdclient = static_library('collectdclient',
     'src/libcollectdclient',
     includes,
   ],
-  dependencies : libgcrypt)
+  dependencies : libgcrypt,
+  install : true,
+  version: '1.1.0')
 
 threads = dependency('threads')
 libdl = cc.find_library('dl')
@@ -257,6 +262,8 @@ executable('collectd',
   export_dynamic : true
 )
 
+rpath = get_option('prefix') + '/' + get_option('libdir')
+
 executable('collectdctl',
   sources : 'src/collectdctl.c',
   include_directories : [
@@ -264,7 +271,8 @@ executable('collectdctl',
     'src/libcollectdclient',
   ],
   link_with : libcollectdclient,
-  install : true
+  install : true,
+  install_rpath : rpath,
 )
 
 executable('collectdmon',
@@ -281,7 +289,8 @@ executable('collectd-nagios',
     'src/libcollectdclient',
   ],
   link_with : libcollectdclient,
-  install : true
+  install : true,
+  install_rpath : rpath,
 )
 
 executable('collectd-tg',
@@ -294,7 +303,8 @@ executable('collectd-tg',
     libcollectdclient,
     libheap,
   ],
-  install : true
+  install : true,
+  install_rpath : rpath,
 )
 
 configure_file(
