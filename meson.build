@@ -29,6 +29,16 @@ conf.set('DATA_MAX_NAME_LEN', 128, description : 'Maximum length of data buffers
 conf.set10('FP_LAYOUT_NEED_NOTHING', true, description : 'Define if doubles are stored in x86 representation.')
 conf.set10('NAN_STATIC_DEFAULT', true, description : 'Define if NAN is defined by default and can initialize static variables.')
 
+if host_machine.system() == 'aix'
+  conf.set10('KERNEL_AIX', true, description : 'True if program is to be compiled for a AIX kernel')
+elif host_machine.system() == 'freebsd'
+  conf.set10('KERNEL_FREEBSD', true, description : 'True if program is to be compiled for a FreeBSD kernel')
+elif host_machine.system() == 'linux'
+  conf.set10('KERNEL_LINUX', true, description : 'True if program is to be compiled for a Linux kernel')
+elif host_machine.system() == 'solaris'
+  conf.set10('KERNEL_SOLARIS', true, description : 'True if program is to be compiled for a Solaris kernel')
+endif
+
 headers = [
   'arpa/inet.h',
   'dirent.h',
@@ -601,6 +611,42 @@ configure_file(
   install_dir : get_option('sysconfdir'),
 )
 
+shared_module('aggregation', [
+    'src/aggregation.c',
+    'src/utils/lookup/vl_lookup.c',
+    'src/utils/lookup/vl_lookup.h',
+  ],
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+
+shared_module('cpufreq', 'src/cpufreq.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+
+shared_module('cpusleep', 'src/cpusleep.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+
+shared_module('csv', 'src/csv.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+
 shared_module('logfile', 'src/logfile.c',
   include_directories : includes,
   install : true,
@@ -608,6 +654,7 @@ shared_module('logfile', 'src/logfile.c',
   install_dir : join_paths(get_option('libdir'), 'collectd'),
   gnu_symbol_visibility : 'hidden',
 )
+
 shared_module('syslog', 'src/syslog.c',
   include_directories : includes,
   install : true,
