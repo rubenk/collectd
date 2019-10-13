@@ -339,11 +339,39 @@ configure_file(
   configuration : conf
 )
 
-custom_target('collectd.1',
-  output : 'collectd.1',
-  input : 'src/collectd.pod',
-  install : true,
-  install_dir : join_paths(get_option('prefix'), get_option('mandir'), 'man1'),
-  build_by_default : true,
-  command : [pod2man, '--release', collectd_version, '--center=collectd', '@INPUT@', '@OUTPUT@'])
+manpages = [
+  ['collectd', '1'],
+  ['collectd-nagios', '1'],
+  ['collectd-tg', '1'],
+  ['collectdctl', '1'],
+  ['collectdmon', '1'],
+  ['collectd-email', '5'],
+  ['collectd-exec', '5'],
+  ['collectd-java', '5'],
+  ['collectd-lua', '5'],
+  ['collectd-perl', '5'],
+  ['collectd-python', '5'],
+  ['collectd-snmp', '5'],
+  ['collectd-threshold', '5'],
+  ['collectd-unixsock', '5'],
+  ['collectd.conf', '5'],
+  ['types.db', '5'],
+]
+
+foreach tuple : manpages
+  stem = tuple[0]
+  section = tuple[1]
+  man = stem + '.' + section
+  pod = join_paths('src', stem + '.pod')
+  mandirn = join_paths(get_option('mandir'), 'man' + section)
+
+  custom_target(man,
+    output : man,
+    input : pod,
+    install : true,
+    install_dir : join_paths(get_option('prefix'), get_option('mandir'), 'man' + section),
+    build_by_default : true,
+    command : [pod2man, '--section', section, '--release', collectd_version, '--center=collectd', '@INPUT@', '@OUTPUT@']
+  )
+endforeach
 
