@@ -37,6 +37,9 @@ os_solaris = false
 if host_machine.system() == 'aix'
   conf.set10('KERNEL_AIX', true, description : 'True if program is to be compiled for a AIX kernel')
   os_aix = true
+elif host_machine.system() == 'darwin'
+  conf.set10('KERNEL_DARWIN', true, description : 'True if program is to be compiled for a Darwin kernel')
+  os_darwin = true
 elif host_machine.system() == 'freebsd'
   conf.set10('KERNEL_FREEBSD', true, description : 'True if program is to be compiled for a FreeBSD kernel')
   os_freebsd = true
@@ -149,6 +152,22 @@ if cc.compiles('''
   int main(void) { return htonll(0); }
 ''', args : '-Werror')
   conf.set10('HAVE_HTONLL', true, description : 'Define if the function htonll exists.')
+endif
+
+if os_darwin
+  headers = [
+    'IOKit/IOKitLib.h',
+    'IOKit/IOTypes.h',
+    'IOKit/ps/IOPowerSources.h',
+    'IOKit/ps/IOPSKeys.h',
+  ]
+  foreach h : headers
+    if cc.check_header(h)
+      conf.set10('HAVE_' + h.underscorify().to_upper(), true,
+        description : 'Define to 1 if you have the <@0@> header file.'.format(h)
+      )
+    endif
+  endforeach
 endif
 
 sbindir = get_option('sbindir')
@@ -625,13 +644,48 @@ collectd_conf_settings = {
 
 plugin_defaults = configuration_data(collectd_conf_settings)
 
-foreach plugin : plugins 
+foreach plugin : plugins
   plugin_defaults.set('BUILD_PLUGIN_' + plugin.to_upper() + '_TRUE', '#')
   set_variable('plugin_' + plugin, false)
 endforeach
+if os_darwin
+  plugin_battery = true
+endif
 
 if os_linux
-  plugin_cpusleep = true
+  plugin_battery = true
+  plugin_cgroups = true
+  plugin_conntrack = true
+  plugin_contextswitch = true
+  plugin_cpu = true
+  plugin_cpufreq = true
+  plugin_disk = true
+  plugin_drbd = true
+  plugin_entropy = true
+  plugin_fhcount = true
+  plugin_fscache = true
+  plugin_hugepages = true
+  plugin_interface = true
+  plugin_ipc = true
+  plugin_irq = true
+  plugin_load = true
+  plugin_lvm = true
+  plugin_mcelog = true
+  plugin_memory = true
+  plugin_nfs = true
+  plugin_numa = true
+  plugin_processes = true
+  plugin_protocols = true
+  plugin_serial = true
+  plugin_swap = true
+  plugin_synproxy = true
+  plugin_tcpconns = true
+  plugin_thermal = true
+  plugin_uptime = true
+  plugin_vmem = true
+  plugin_vserver = true
+  plugin_wireless = true
+  plugin_zfs_arc = true
 endif
 
 configure_file(
@@ -654,6 +708,19 @@ shared_module('aggregation', [
   gnu_symbol_visibility : 'hidden',
 )
 
+if plugin_battery
+  shared_module('battery', [
+      'src/battery.c',
+      'src/battery_statefs.c',
+    ],
+    include_directories : includes,
+    install : true,
+    name_prefix : '',
+    install_dir : join_paths(get_option('libdir'), 'collectd'),
+    gnu_symbol_visibility : 'hidden',
+  )
+endif
+
 shared_module('cpu', 'src/cpu.c',
   include_directories : includes,
   install : true,
@@ -662,13 +729,15 @@ shared_module('cpu', 'src/cpu.c',
   gnu_symbol_visibility : 'hidden',
 )
 
-shared_module('cpufreq', 'src/cpufreq.c',
-  include_directories : includes,
-  install : true,
-  name_prefix : '',
-  install_dir : join_paths(get_option('libdir'), 'collectd'),
-  gnu_symbol_visibility : 'hidden',
-)
+if plugin_cpufreq
+  shared_module('cpufreq', 'src/cpufreq.c',
+    include_directories : includes,
+    install : true,
+    name_prefix : '',
+    install_dir : join_paths(get_option('libdir'), 'collectd'),
+    gnu_symbol_visibility : 'hidden',
+  )
+endif
 
 if plugin_cpusleep
   shared_module('cpusleep', 'src/cpusleep.c',
