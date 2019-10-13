@@ -333,7 +333,12 @@ install_headers(collectdclient_headers, subdir : 'collectd')
 threads = dependency('threads')
 libdl = cc.find_library('dl')
 
-libcap = dependency('libcap', required : false)
+if os_linux
+  libcap = dependency('libcap', required : false)
+else
+  libcap = disabler()
+endif
+
 if cc.has_function('cap_get_proc', dependencies : libcap)
   conf.set10('HAVE_CAPABILITY', true,
     description : 'Define to 1 if you have cap_get_proc() (-lcap).'
