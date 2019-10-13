@@ -158,9 +158,11 @@ endif
 if os_darwin
   headers = [
     'IOKit/IOKitLib.h',
+    'IOKit/IOBSD.h',
     'IOKit/IOTypes.h',
     'IOKit/ps/IOPowerSources.h',
     'IOKit/ps/IOPSKeys.h',
+    'IOKit/storage/IOBlockStorageDriver.h',
     'mach/mach_init.h',
     'mach/host_priv.h',
     'mach/mach_error.h',
@@ -235,6 +237,14 @@ libheap = static_library('heap',
   sources : [
     'src/utils/heap/heap.c',
     'src/utils/heap/heap.h',
+  ],
+  include_directories : includes,
+)
+
+libignorelist = static_library('ignorelist',
+  sources : [
+    'src/utils/ignorelist/ignorelist.c',
+    'src/utils/ignorelist/ignorelist.h',
   ],
   include_directories : includes,
 )
@@ -682,6 +692,7 @@ if os_darwin
   if iokit.found()
     plugin_apple_sensors = true
     plugin_battery = true
+    plugin_disk = true
   endif
 endif
 
@@ -801,6 +812,18 @@ shared_module('csv', 'src/csv.c',
   install_dir : join_paths(get_option('libdir'), 'collectd'),
   gnu_symbol_visibility : 'hidden',
 )
+
+if plugin_disk
+  shared_module('disk', 'src/disk.c',
+    include_directories : includes,
+    install : true,
+    name_prefix : '',
+    install_dir : join_paths(get_option('libdir'), 'collectd'),
+    gnu_symbol_visibility : 'hidden',
+    link_with : libignorelist,
+    dependencies : iokit,
+  )
+endif
 
 shared_module('logfile', 'src/logfile.c',
   include_directories : includes,
