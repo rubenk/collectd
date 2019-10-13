@@ -161,7 +161,26 @@ if os_darwin
     'IOKit/IOTypes.h',
     'IOKit/ps/IOPowerSources.h',
     'IOKit/ps/IOPSKeys.h',
+    'mach/mach_init.h',
+    'mach/host_priv.h',
+    'mach/mach_error.h',
+    'mach/mach_host.h',
+    'mach/mach_port.h',
+    'mach/mach_types.h',
+    'mach/message.h',
+    'mach/processor_set.h',
+    'mach/processor.h',
+    'mach/processor_info.h',
+    'mach/task.h',
+    'mach/thread_act.h',
+    'mach/vm_region.h',
+    'mach/vm_map.h',
+    'mach/vm_prot.h',
+    'mach/vm_statistics.h',
+    'mach/kern_return.h',
+    'CoreFoundation/CoreFoundation.h',
   ]
+
   foreach h : headers
     if cc.check_header(h)
       conf.set10('HAVE_' + h.underscorify().to_upper(), true,
@@ -169,6 +188,9 @@ if os_darwin
       )
     endif
   endforeach
+
+  iokit = dependency('IOKit', method: 'extraframework')
+
 endif
 
 sbindir = get_option('sbindir')
@@ -649,7 +671,9 @@ foreach plugin : plugins
   plugin_defaults.set('BUILD_PLUGIN_' + plugin.to_upper() + '_TRUE', '#')
   set_variable('plugin_' + plugin, false)
 endforeach
+
 if os_darwin
+  plugin_apple_sensors = true
   plugin_battery = true
 endif
 
@@ -709,6 +733,17 @@ shared_module('aggregation', [
   gnu_symbol_visibility : 'hidden',
 )
 
+if plugin_apple_sensors
+  shared_module('apple_sensors', 'src/apple_sensors.c',
+    include_directories : includes,
+    install : true,
+    name_prefix : '',
+    install_dir : join_paths(get_option('libdir'), 'collectd'),
+    gnu_symbol_visibility : 'hidden',
+    dependencies : iokit,
+  )
+endif
+
 if plugin_battery
   shared_module('battery', [
       'src/battery.c',
@@ -719,6 +754,7 @@ if plugin_battery
     name_prefix : '',
     install_dir : join_paths(get_option('libdir'), 'collectd'),
     gnu_symbol_visibility : 'hidden',
+    dependencies : iokit,
   )
 endif
 

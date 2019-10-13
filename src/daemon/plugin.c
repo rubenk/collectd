@@ -956,6 +956,8 @@ static void plugin_free_loaded(void) {
 #define BUFSIZE 512
 #ifdef WIN32
 #define SHLIB_SUFFIX ".dll"
+#elif defined(KERNEL_DARWIN)
+#define SHLIB_SUFFIX ".dylib"
 #else
 #define SHLIB_SUFFIX ".so"
 #endif
