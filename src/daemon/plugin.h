@@ -481,6 +481,7 @@ int plugin_thread_create(pthread_t *thread, const pthread_attr_t *attr,
  * Plugins need to implement this
  */
 
+__attribute__((visibility("default"))) extern
 void module_register(void);
 
 #endif /* PLUGIN_H */

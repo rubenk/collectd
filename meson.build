@@ -606,4 +606,5 @@ shared_module('syslog', 'src/syslog.c',
   install : true,
   name_prefix : '',
   install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
 )
