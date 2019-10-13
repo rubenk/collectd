@@ -379,3 +379,9 @@ install_data([
   'src/types.db',
   'src/postgresql_default.conf'
 ])
+
+pkg = import('pkgconfig')
+pkg.generate(libraries : libcollectdclient,
+             name : 'libcollectdclient',
+             description : 'Client library for the unixsock plugin of collectd.'
+)
