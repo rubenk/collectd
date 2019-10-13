@@ -30,6 +30,7 @@ conf.set10('FP_LAYOUT_NEED_NOTHING', true, description : 'Define if doubles are 
 conf.set10('NAN_STATIC_DEFAULT', true, description : 'Define if NAN is defined by default and can initialize static variables.')
 
 os_aix = false
+os_darwin = false
 os_freebsd = false
 os_linux = false
 os_solaris = false
