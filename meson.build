@@ -375,3 +375,4 @@ foreach tuple : manpages
   )
 endforeach
 
+install_data('src/types.db')
