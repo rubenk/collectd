@@ -120,6 +120,13 @@ foreach f : functions
   endif
 endforeach
 
+if cc.compiles('''
+  #include <sys/types.h>
+  int main(void) { return htonll(0); }
+''', args : '-Werror')
+  conf.set10('HAVE_HTONLL', true)
+endif
+
 sbindir = get_option('sbindir')
 
 flex = find_program('flex')
