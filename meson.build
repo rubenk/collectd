@@ -375,4 +375,7 @@ foreach tuple : manpages
   )
 endforeach
 
-install_data('src/types.db')
+install_data([
+  'src/types.db',
+  'src/postgresql_default.conf'
+])
