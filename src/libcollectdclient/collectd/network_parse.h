@@ -26,7 +26,7 @@
 #ifndef LIBCOLLECTD_NETWORK_PARSE_H
 #define LIBCOLLECTD_NETWORK_PARSE_H 1
 
-#include "collectd/lcc_features.h"
+#include "lcc_features.h"
 
 #include "collectd/network.h" /* for lcc_security_level_t */
 #include "collectd/types.h"

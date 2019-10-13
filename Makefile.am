@@ -539,6 +539,7 @@ libcollectdclient_la_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(srcdir)/src/libcollectdclient \
 	-I$(top_builddir)/src/libcollectdclient \
+	-I$(top_builddir)/src/libcollectdclient/collectd \
 	-I$(srcdir)/src/daemon
 libcollectdclient_la_LDFLAGS = -version-info 2:0:1
 libcollectdclient_la_LIBADD = -lm
@@ -558,7 +559,8 @@ test_libcollectd_network_parse_SOURCES = src/libcollectdclient/network_parse_tes
 test_libcollectd_network_parse_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(srcdir)/src/libcollectdclient \
-	-I$(top_builddir)/src/libcollectdclient
+	-I$(top_builddir)/src/libcollectdclient \
+	-I$(top_builddir)/src/libcollectdclient/collectd
 if BUILD_WITH_LIBGCRYPT
 test_libcollectd_network_parse_CPPFLAGS += $(GCRYPT_CPPFLAGS)
 test_libcollectd_network_parse_LDFLAGS = $(GCRYPT_LDFLAGS)

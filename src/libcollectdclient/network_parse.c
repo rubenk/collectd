@@ -29,7 +29,7 @@
 #define __attribute__(x) /**/
 #endif
 
-#include "collectd/lcc_features.h"
+#include "lcc_features.h"
 #include "collectd/network_parse.h"
 #include "globals.h"
 

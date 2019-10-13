@@ -33,7 +33,7 @@
 #define __attribute__(x) /**/
 #endif
 
-#include "collectd/lcc_features.h"
+#include "lcc_features.h"
 #include "collectd/network_parse.h" /* for lcc_network_parse_options_t */
 #include "collectd/server.h"
 

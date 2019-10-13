@@ -35,7 +35,7 @@
 #define __attribute__(x) /**/
 #endif
 
-#include "collectd/lcc_features.h"
+#include "lcc_features.h"
 
 #include <assert.h>
 #include <errno.h>

@@ -1,7 +1,7 @@
 # vim: set ft=meson ts=2 sw=2 sts=2 et
 
 project('collectd', 'c',
-  version : '6.0',
+  version : '5.8.0.1314.g3fb3915+',
   meson_version : '>= 0.48',
   default_options : [
     'buildtype=debugoptimized',
@@ -19,6 +19,7 @@ collectd_version = meson.project_version()
 conf.set_quoted('PACKAGE_VERSION', collectd_version)
 
 # TODO: make these dynamic
+conf.set_quoted('PACKAGE_NAME', 'collectd')
 conf.set('COLLECTD_USERAGENT', false, description : 'User agent for http requests')
 conf.set10('COLLECT_DAEMON', true, description : 'whether or not to enable feature daemon mode')
 conf.set10('COLLECT_DEBUG', false, description : 'whether or not to enable feature debugging')
@@ -196,6 +197,32 @@ if cc.has_header('gcrypt.h')
   conf.set10('HAVE_GCRYPT_H', true)
 endif
 
+lcc_ver = collectd_version.split('.')
+lcc_major = lcc_ver[0].to_int()
+lcc_minor = lcc_ver[1].to_int()
+lcc_patch = lcc_ver[2].to_int()
+
+lcc_string = '@0@.@1@.@2@'.format(lcc_major, lcc_minor, lcc_patch)
+
+if lcc_ver.length() == 4
+  lcc_extra = lcc_ver[3].to_int()
+endif
+
+if lcc_ver.length() == 5
+  lcc_extra = '@0@.@1@'.format(lcc_ver[3], lcc_ver[4])
+endif
+
+lcc_features = configuration_data()
+lcc_features.set('LCC_VERSION_MAJOR', lcc_major)
+lcc_features.set('LCC_VERSION_MINOR', lcc_minor)
+lcc_features.set('LCC_VERSION_PATCH', lcc_patch)
+lcc_features.set('LCC_VERSION_EXTRA', lcc_extra)
+lcc_features.set('LCC_VERSION_STRING', lcc_string)
+lcc_features_h = configure_file(configuration : lcc_features,
+                                input : 'src/libcollectdclient/collectd/lcc_features.h.in',
+                                output : '@BASENAME@'
+)
+
 libcollectdclient = shared_library('collectdclient',
   sources : [
     'src/libcollectdclient/client.c',
@@ -216,12 +243,12 @@ libcollectdclient = shared_library('collectdclient',
 
 collectdclient_headers = [
   'src/libcollectdclient/collectd/client.h',
-  'src/libcollectdclient/collectd/lcc_features.h',
   'src/libcollectdclient/collectd/network_buffer.h',
   'src/libcollectdclient/collectd/network.h',
   'src/libcollectdclient/collectd/network_parse.h',
   'src/libcollectdclient/collectd/server.h',
   'src/libcollectdclient/collectd/types.h',
+  lcc_features_h,
 ]
 
 install_headers(collectdclient_headers, subdir : 'collectd')
@@ -385,3 +412,4 @@ pkg.generate(libraries : libcollectdclient,
              name : 'libcollectdclient',
              description : 'Client library for the unixsock plugin of collectd.'
 )
+
