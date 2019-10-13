@@ -579,9 +579,9 @@ collectd_conf_settings = {
   'localstatedir': join_paths(get_option('prefix'), get_option('localstatedir')),
   'libdir': join_paths(get_option('prefix'), get_option('libdir')),
   'prefix': get_option('prefix'),
-  'DEFAULT_LOG_LEVEL': 'info',
-  'LOAD_PLUGIN_SYSLOG': '',
-  'LOAD_PLUGIN_LOGFILE': '##',
+  'DEFAULT_LOG_LEVEL': 'debug',
+  'LOAD_PLUGIN_SYSLOG': '##',
+  'LOAD_PLUGIN_LOGFILE': '',
   'LOAD_PLUGIN_LOG_LOGSTASH': '##',
   'LOAD_PLUGIN_CSV': '##',
   'LOAD_PLUGIN_NETWORK': '##',
@@ -601,6 +601,13 @@ configure_file(
   install_dir : get_option('sysconfdir'),
 )
 
+shared_module('logfile', 'src/logfile.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
 shared_module('syslog', 'src/syslog.c',
   include_directories : includes,
   install : true,
