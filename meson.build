@@ -133,6 +133,8 @@ if cc.compiles('''
 endif
 
 sbindir = get_option('sbindir')
+prefixdir = get_option('prefix')
+plugindir = join_paths(prefixdir, get_option('libdir'), 'collectd')
 
 flex = find_program('flex')
 bison = find_program('bison')
@@ -313,7 +315,8 @@ executable('collectd',
   ],
   install : true,
   install_dir : sbindir,
-  export_dynamic : true
+  export_dynamic : true,
+  c_args : '-DPLUGINDIR="@0@"'.format(plugindir),
 )
 
 rpath = get_option('prefix') + '/' + get_option('libdir')
@@ -598,3 +601,9 @@ configure_file(
   install_dir : get_option('sysconfdir'),
 )
 
+shared_module('syslog', 'src/syslog.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+)
