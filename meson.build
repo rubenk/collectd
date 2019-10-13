@@ -29,14 +29,23 @@ conf.set('DATA_MAX_NAME_LEN', 128, description : 'Maximum length of data buffers
 conf.set10('FP_LAYOUT_NEED_NOTHING', true, description : 'Define if doubles are stored in x86 representation.')
 conf.set10('NAN_STATIC_DEFAULT', true, description : 'Define if NAN is defined by default and can initialize static variables.')
 
+os_aix = false
+os_freebsd = false
+os_linux = false
+os_solaris = false
+
 if host_machine.system() == 'aix'
   conf.set10('KERNEL_AIX', true, description : 'True if program is to be compiled for a AIX kernel')
+  os_aix = true
 elif host_machine.system() == 'freebsd'
   conf.set10('KERNEL_FREEBSD', true, description : 'True if program is to be compiled for a FreeBSD kernel')
+  os_freebsd = true
 elif host_machine.system() == 'linux'
   conf.set10('KERNEL_LINUX', true, description : 'True if program is to be compiled for a Linux kernel')
+  os_linux = true
 elif host_machine.system() == 'solaris'
   conf.set10('KERNEL_SOLARIS', true, description : 'True if program is to be compiled for a Solaris kernel')
+  os_solaris = true
 endif
 
 headers = [
@@ -613,11 +622,17 @@ collectd_conf_settings = {
   'LOAD_PLUGIN_NETWORK': '##',
   'LOAD_PLUGIN_RRDTOOL': '##',
 }
+
 plugin_defaults = configuration_data(collectd_conf_settings)
 
 foreach plugin : plugins 
   plugin_defaults.set('BUILD_PLUGIN_' + plugin.to_upper() + '_TRUE', '#')
+  set_variable('plugin_' + plugin, false)
 endforeach
+
+if os_linux
+  plugin_cpusleep = true
+endif
 
 configure_file(
   configuration : plugin_defaults,
@@ -655,13 +670,15 @@ shared_module('cpufreq', 'src/cpufreq.c',
   gnu_symbol_visibility : 'hidden',
 )
 
-shared_module('cpusleep', 'src/cpusleep.c',
-  include_directories : includes,
-  install : true,
-  name_prefix : '',
-  install_dir : join_paths(get_option('libdir'), 'collectd'),
-  gnu_symbol_visibility : 'hidden',
-)
+if plugin_cpusleep
+  shared_module('cpusleep', 'src/cpusleep.c',
+    include_directories : includes,
+    install : true,
+    name_prefix : '',
+    install_dir : join_paths(get_option('libdir'), 'collectd'),
+    gnu_symbol_visibility : 'hidden',
+  )
+endif
 
 shared_module('csv', 'src/csv.c',
   include_directories : includes,
