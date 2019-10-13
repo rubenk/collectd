@@ -685,10 +685,9 @@ foreach plugin : plugins
   set_variable('plugin_' + plugin, false)
 endforeach
 
-iokit = disabler()
+iokit = dependency('appleframeworks', modules : 'IOKit', required: false)
 
 if os_darwin
-  iokit = dependency('appleframeworks', modules : 'IOKit', required: false)
   if iokit.found()
     plugin_apple_sensors = true
     plugin_battery = true
