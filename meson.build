@@ -189,8 +189,6 @@ if os_darwin
     endif
   endforeach
 
-  iokit = dependency('IOKit', method: 'extraframework')
-
 endif
 
 sbindir = get_option('sbindir')
@@ -672,9 +670,14 @@ foreach plugin : plugins
   set_variable('plugin_' + plugin, false)
 endforeach
 
+iokit = disabler()
+
 if os_darwin
-  plugin_apple_sensors = true
-  plugin_battery = true
+  iokit = dependency('appleframeworks', modules : 'IOKit', required: false)
+  if iokit.found()
+    plugin_apple_sensors = true
+    plugin_battery = true
+  endif
 endif
 
 if os_linux
