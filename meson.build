@@ -84,6 +84,10 @@ foreach h : headers
     conf.set10('HAVE_' + h.underscorify().to_upper(), true,
       description : 'Define to 1 if you have the <@0@> header file.'.format(h)
     )
+  else
+    conf.set('HAVE_' + h.underscorify().to_upper(), false,
+      description : 'Define to 1 if you have the <@0@> header file.'.format(h)
+    )
   endif
 endforeach
 
@@ -124,7 +128,7 @@ if cc.compiles('''
   #include <sys/types.h>
   int main(void) { return htonll(0); }
 ''', args : '-Werror')
-  conf.set10('HAVE_HTONLL', true)
+  conf.set10('HAVE_HTONLL', true, description : 'Define if the function htonll exists.')
 endif
 
 sbindir = get_option('sbindir')
