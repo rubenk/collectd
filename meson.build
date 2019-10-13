@@ -23,7 +23,7 @@ conf.set('COLLECTD_USERAGENT', false, description : 'User agent for http request
 conf.set10('COLLECT_DAEMON', true, description : 'whether or not to enable feature daemon mode')
 conf.set10('COLLECT_DEBUG', false, description : 'whether or not to enable feature debugging')
 conf.set10('COLLECT_GETIFADDRS', false, description : 'whether or not to enable feature getifaddrs under Linux')
-conf.set10('COLLECT_WERROR', false, description : 'whether or not to enable feature building with -Werror')
+conf.set10('COLLECT_WERROR', true, description : 'whether or not to enable feature building with -Werror')
 conf.set('DATA_MAX_NAME_LEN', 128, description : 'Maximum length of data buffers')
 conf.set10('FP_LAYOUT_NEED_NOTHING', true, description : 'Define if doubles are stored in x86 representation.')
 conf.set10('NAN_STATIC_DEFAULT', true, description : 'Define if NAN is defined by default and can initialize static variables.')
