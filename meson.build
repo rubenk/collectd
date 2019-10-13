@@ -171,7 +171,7 @@ libavltree = static_library('avltree',
     'src/utils/avltree/avltree.c',
     'src/utils/avltree/avltree.h'
   ],
-  include_directories : includes
+  include_directories : includes,
 )
 
 libcommon = static_library('common',
@@ -179,7 +179,7 @@ libcommon = static_library('common',
     'src/utils/common/common.c',
     'src/utils/common/common.h',
   ],
-  include_directories : includes
+  include_directories : includes,
 )
 
 libheap = static_library('heap',
@@ -187,7 +187,23 @@ libheap = static_library('heap',
     'src/utils/heap/heap.c',
     'src/utils/heap/heap.h',
   ],
-  include_directories : includes
+  include_directories : includes,
+)
+
+libformat_graphite = static_library('format_graphite',
+  sources : [
+    'src/utils/format_graphite/format_graphite.c',
+    'src/utils/format_graphite/format_graphite.h',
+  ],
+  include_directories : includes,
+)
+
+libformat_json = static_library('format_json',
+  sources : [
+    'src/utils/format_json/format_json.c',
+    'src/utils/format_json/format_json.h',
+  ],
+  include_directories : includes,
 )
 
 liboconfig = static_library('oconfig',
@@ -623,6 +639,14 @@ shared_module('aggregation', [
   gnu_symbol_visibility : 'hidden',
 )
 
+shared_module('cpu', 'src/cpu.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+
 shared_module('cpufreq', 'src/cpufreq.c',
   include_directories : includes,
   install : true,
@@ -656,6 +680,26 @@ shared_module('logfile', 'src/logfile.c',
 )
 
 shared_module('syslog', 'src/syslog.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+
+shared_module('write_log', 'src/write_log.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+  link_with : [
+    libformat_graphite,
+    libformat_json,
+  ],
+)
+
+shared_module('write_syslog', 'src/write_syslog.c',
   include_directories : includes,
   install : true,
   name_prefix : '',

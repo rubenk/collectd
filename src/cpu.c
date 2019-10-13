@@ -60,8 +60,10 @@
 
 #if (defined(HAVE_SYSCTL) && HAVE_SYSCTL) ||                                   \
     (defined(HAVE_SYSCTLBYNAME) && HAVE_SYSCTLBYNAME)
+#ifndef KERNEL_LINUX
 #ifdef HAVE_SYS_SYSCTL_H
 #include <sys/sysctl.h>
+#endif
 #endif
 
 #ifdef HAVE_SYS_DKSTAT_H
