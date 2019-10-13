@@ -43,7 +43,7 @@ elif host_machine.system() == 'freebsd'
 elif host_machine.system() == 'linux'
   conf.set10('KERNEL_LINUX', true, description : 'True if program is to be compiled for a Linux kernel')
   os_linux = true
-elif host_machine.system() == 'solaris'
+elif host_machine.system() == 'sunos'
   conf.set10('KERNEL_SOLARIS', true, description : 'True if program is to be compiled for a Solaris kernel')
   os_solaris = true
 endif
