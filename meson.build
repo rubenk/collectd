@@ -16,10 +16,12 @@ cc = meson.get_compiler('c')
 conf = configuration_data()
 
 collectd_version = meson.project_version()
-conf.set_quoted('PACKAGE_VERSION', collectd_version)
 
 # TODO: make these dynamic
-conf.set_quoted('PACKAGE_NAME', 'collectd')
+conf.set_quoted('PACKAGE', 'collectd')
+conf.set_quoted('PACKAGE_NAME', 'collectd', description : 'Define to the full name of this package.')
+conf.set_quoted('PACKAGE_VERSION', collectd_version, description : 'Define to the version of this package.')
+conf.set_quoted('PACKAGE_STRING', 'collectd @0@'.format(collectd_version), description : 'Define to the full name and version of this package.')
 conf.set('COLLECTD_USERAGENT', false, description : 'User agent for http requests')
 conf.set10('COLLECT_DAEMON', true, description : 'whether or not to enable feature daemon mode')
 conf.set10('COLLECT_DEBUG', false, description : 'whether or not to enable feature debugging')
