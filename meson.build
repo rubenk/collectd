@@ -157,6 +157,16 @@ if cc.compiles('''
   conf.set10('HAVE_HTONLL', true, description : 'Define if the function htonll exists.')
 endif
 
+# for interface plugin
+if cc.has_member('struct if_data', 'ifi_ibytes',
+    prefix : '''
+      #include <sys/types.h>
+      #include <sys/socket.h>
+      #include <net/if.h>
+  ''')
+  conf.set10('HAVE_STRUCT_IF_DATA', true)
+endif
+
 if os_darwin
   headers = [
     'IOKit/IOKitLib.h',
@@ -694,6 +704,7 @@ if os_darwin
     plugin_apple_sensors = true
     plugin_battery = true
     plugin_disk = true
+    plugin_interface = true
   endif
 endif
 
@@ -823,6 +834,17 @@ if plugin_disk
     gnu_symbol_visibility : 'hidden',
     link_with : libignorelist,
     dependencies : iokit,
+  )
+endif
+
+if plugin_interface
+  shared_module('interface', 'src/interface.c',
+    include_directories : includes,
+    install : true,
+    name_prefix : '',
+    install_dir : join_paths(get_option('libdir'), 'collectd'),
+    gnu_symbol_visibility : 'hidden',
+    link_with : libignorelist,
   )
 endif
 
