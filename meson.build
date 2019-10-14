@@ -876,6 +876,14 @@ shared_module('syslog', 'src/syslog.c',
   gnu_symbol_visibility : 'hidden',
 )
 
+shared_module('uuid', 'src/uuid.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+
 shared_module('write_log', 'src/write_log.c',
   include_directories : includes,
   install : true,
