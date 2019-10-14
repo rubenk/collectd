@@ -790,6 +790,16 @@ if plugin_battery
   )
 endif
 
+if plugin_contextswitch
+shared_module('contextswitch', 'src/contextswitch.c',
+  include_directories : includes,
+  install : true,
+  name_prefix : '',
+  install_dir : join_paths(get_option('libdir'), 'collectd'),
+  gnu_symbol_visibility : 'hidden',
+)
+endif
+
 shared_module('cpu', 'src/cpu.c',
   include_directories : includes,
   install : true,
