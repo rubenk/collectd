@@ -705,6 +705,7 @@ if os_darwin
     plugin_battery = true
     plugin_disk = true
     plugin_interface = true
+    plugin_memory = true
   endif
 endif
 
@@ -855,6 +856,17 @@ shared_module('logfile', 'src/logfile.c',
   install_dir : join_paths(get_option('libdir'), 'collectd'),
   gnu_symbol_visibility : 'hidden',
 )
+
+if plugin_memory
+  shared_module('memory', 'src/memory.c',
+    include_directories : includes,
+    install : true,
+    name_prefix : '',
+    install_dir : join_paths(get_option('libdir'), 'collectd'),
+    gnu_symbol_visibility : 'hidden',
+    link_with : libignorelist,
+  )
+endif
 
 shared_module('syslog', 'src/syslog.c',
   include_directories : includes,
